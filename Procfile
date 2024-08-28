@@ -1,1 +1,1 @@
-web: gunicorn /Users/anirudhannabathula/Desktop/blackscholes/main.py:app
+web: gunicorn main:app
