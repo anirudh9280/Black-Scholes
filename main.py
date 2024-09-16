@@ -1,6 +1,12 @@
-from flask import Flask, request, render_template_string
+import matplotlib
+matplotlib.use('Agg')  # Use the 'Agg' backend for rendering plots to files
+
+from flask import Flask, request, render_template_string, url_for
 import numpy as np
 from scipy.stats import norm
+import matplotlib.pyplot as plt
+import io
+import base64
 
 app = Flask(__name__)
 
@@ -45,6 +51,27 @@ def optionRho(S, K, r, T, sigma, type="c"):
     else:
         return -0.01 * K * T * np.exp(-r*T) * norm.cdf(-d2, 0, 1)
 
+# Function to generate plot image and return it as a base64 string
+def generate_plot(spot_prices, values, ylabel):
+    plt.figure(figsize=(6,4))
+    plt.plot(spot_prices, values, label=ylabel)
+    plt.xlabel('Underlying Asset Price')
+    plt.ylabel(ylabel)
+    plt.title(f'{ylabel} vs Underlying Asset Price')
+    plt.grid(True)
+
+    # Save it to a bytes buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    
+    # Convert the image to a base64 string
+    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    buf.close()
+    plt.close()  # Close the figure to free up memory
+
+    return image_base64
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     # Default values
@@ -64,90 +91,92 @@ def index():
         sigma = float(request.form.get("sigma", 0.30))
         option_type = request.form.get("type", "c")
 
-    # Calculate Option Price and Greeks
-    option_price = blackScholes(S, K, r, T, sigma, option_type)
-    delta = optionDelta(S, K, r, T, sigma, option_type)
-    gamma = optionGamma(S, K, r, T, sigma)
-    theta = optionTheta(S, K, r, T, sigma, option_type)
-    vega = optionVega(S, K, r, T, sigma)
-    rho = optionRho(S, K, r, T, sigma, option_type)
+    # Generate values for spot prices
+    spot_prices = np.linspace(10, 100, 100)  # 100 points between 10 and 100
 
-    # Render the template with the form and calculated results
+    # Calculate Greeks for the range of spot prices
+    deltas = [optionDelta(SP, K, r, T, sigma, option_type) for SP in spot_prices]
+    gammas = [optionGamma(SP, K, r, T, sigma) for SP in spot_prices]
+    thetas = [optionTheta(SP, K, r, T, sigma, option_type) for SP in spot_prices]
+    vegas = [optionVega(SP, K, r, T, sigma) for SP in spot_prices]
+    rhos = [optionRho(SP, K, r, T, sigma, option_type) for SP in spot_prices]
+
+    # Generate plots for each Greek and convert them to base64
+    delta_plot = generate_plot(spot_prices, deltas, 'Delta')
+    gamma_plot = generate_plot(spot_prices, gammas, 'Gamma')
+    theta_plot = generate_plot(spot_prices, thetas, 'Theta')
+    vega_plot = generate_plot(spot_prices, vegas, 'Vega')
+    rho_plot = generate_plot(spot_prices, rhos, 'Rho')
+
+    # Render the template with the form, results, and graphs
     return render_template_string('''
     <html>
         <head>
             <title>Black-Scholes Option Price Calculator</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0 auto;
-                    max-width: 800px;
-                    padding: 20px;
-                    background-color: #f4f4f4;
-                }
-                input, select {
-                    width: 100%;
-                    padding: 10px;
-                    margin: 8px 0;
-                    display: inline-block;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    box-sizing: border-box;
-                }
-                button {
-                    width: 100%;
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 14px 20px;
-                    margin: 8px 0;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                button:hover {
-                    background-color: #45a049;
-                }
-            </style>
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
         </head>
         <body>
-            <h1>Black-Scholes Option Price and Greeks Calculator</h1>
-            <form method="POST">
-                <label for="S">Underlying Asset Price (S):</label>
-                <input type="number" step="0.01" id="S" name="S" value="{{S}}" required>
+            <div class="container">
+                <div class="main-content">
+                    <h1>Black-Scholes Option Price and Greeks Calculator</h1>
+                    <h2>Results:</h2>
+                    <h3>Greeks vs Underlying Asset Price:</h3>
+                    <div class="graph-grid">
+                        <div>
+                            <h4>Delta</h4>
+                            <img src="data:image/png;base64,{{delta_plot}}" alt="Delta plot">
+                        </div>
+                        <div>
+                            <h4>Gamma</h4>
+                            <img src="data:image/png;base64,{{gamma_plot}}" alt="Gamma plot">
+                        </div>
+                        <div>
+                            <h4>Theta</h4>
+                            <img src="data:image/png;base64,{{theta_plot}}" alt="Theta plot">
+                        </div>
+                        <div>
+                            <h4>Vega</h4>
+                            <img src="data:image/png;base64,{{vega_plot}}" alt="Vega plot">
+                        </div>
+                        <div>
+                            <h4>Rho</h4>
+                            <img src="data:image/png;base64,{{rho_plot}}" alt="Rho plot">
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar">
+                    <form method="POST">
+                        <h3>Input Parameters:</h3>
+                        <label for="S">Underlying Asset Price (S):</label>
+                        <input type="number" step="0.01" id="S" name="S" value="{{S}}" required>
 
-                <label for="K">Strike Price (K):</label>
-                <input type="number" step="0.01" id="K" name="K" value="{{K}}" required>
+                        <label for="K">Strike Price (K):</label>
+                        <input type="number" step="0.01" id="K" name="K" value="{{K}}" required>
 
-                <label for="r">Risk-Free Rate (r):</label>
-                <input type="number" step="0.001" id="r" name="r" value="{{r}}" required>
+                        <label for="r">Risk-Free Rate (r):</label>
+                        <input type="number" step="0.001" id="r" name="r" value="{{r}}" required>
 
-                <label for="T">Time to Expiry (T in years):</label>
-                <input type="number" step="0.01" id="T" name="T" value="{{T}}" required>
+                        <label for="T">Time to Expiry (T in years):</label>
+                        <input type="number" step="0.01" id="T" name="T" value="{{T}}" required>
 
-                <label for="sigma">Volatility (sigma):</label>
-                <input type="number" step="0.01" id="sigma" name="sigma" value="{{sigma}}" required>
+                        <label for="sigma">Volatility (sigma):</label>
+                        <input type="number" step="0.01" id="sigma" name="sigma" value="{{sigma}}" required>
 
-                <label for="type">Option Type:</label>
-                <select id="type" name="type">
-                    <option value="c" {% if option_type == "c" %}selected{% endif %}>Call</option>
-                    <option value="p" {% if option_type == "p" %}selected{% endif %}>Put</option>
-                </select>
+                        <label for="type">Option Type:</label>
+                        <select id="type" name="type">
+                            <option value="c" {% if option_type == "c" %}selected{% endif %}>Call</option>
+                            <option value="p" {% if option_type == "p" %}selected{% endif %}>Put</option>
+                        </select>
 
-                <button type="submit">Calculate</button>
-            </form>
-
-            <h2>Results:</h2>
-            <p>Option Price: {{option_price}}</p>
-            <p>Delta: {{delta}}</p>
-            <p>Gamma: {{gamma}}</p>
-            <p>Theta: {{theta}}</p>
-            <p>Vega: {{vega}}</p>
-            <p>Rho: {{rho}}</p>
+                        <button type="submit">Calculate</button>
+                    </form>
+                </div>
+            </div>
         </body>
     </html>
-    ''', S=S, K=K, r=r, T=T, sigma=sigma, option_type=option_type, 
-    option_price=round(option_price, 4), delta=round(delta, 4), 
-    gamma=round(gamma, 4), theta=round(theta, 4), vega=round(vega, 4), rho=round(rho, 4))
+    ''', S=S, K=K, r=r, T=T, sigma=sigma, option_type=option_type,
+    delta_plot=delta_plot, gamma_plot=gamma_plot, theta_plot=theta_plot, 
+    vega_plot=vega_plot, rho_plot=rho_plot)
 
 if __name__ == "__main__":
     app.run(debug=True)
