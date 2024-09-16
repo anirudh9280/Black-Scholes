@@ -1,71 +1,86 @@
+/* Light Mode (Default) */
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+    background-color: #ffffff;
+    color: #000000;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
     display: flex;
-    width: 100%;
+    padding: 20px;
 }
 
 .main-content {
     flex: 3;
-    padding: 20px;
+    padding-right: 20px;
 }
 
 .sidebar {
     flex: 1;
-    background-color: #ffffff;
     padding: 20px;
-    box-shadow: -3px 0px 15px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+h1,
+h3 {
+    color: #333;
 }
 
 input,
-select {
+select,
+button {
     width: 100%;
     padding: 10px;
-    margin: 8px 0;
-    display: inline-block;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
 }
 
 button {
-    width: 100%;
-    background-color: #4CAF50;
+    background-color: #007bff;
     color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
-img {
-    width: 100%;
-    height: auto;
-    margin-top: 20px;
+/* Dark Mode */
+body.dark-mode {
+    background-color: #181818;
+    color: #e0e0e0;
 }
 
-.graph-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    /* 2 columns on wider screens, 1 column on narrow screens */
-    grid-gap: 20px;
-    /* Space between the graphs */
+h1.dark-mode,
+h3.dark-mode {
+    color: #e0e0e0;
 }
 
-h1,
-h2,
-h3,
-h4 {
-    color: #333;
+.sidebar.dark-mode {
+    background-color: #242424;
+    border-color: #333;
+}
+
+input.dark-mode,
+select.dark-mode {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+button.dark-mode {
+    background-color: #ff8c00;
+    color: black;
+}
+
+button.dark-mode:hover {
+    background-color: #e07b00;
+}
+
+input.dark-mode::placeholder {
+    color: #ccc;
 }
