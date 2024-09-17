@@ -52,7 +52,7 @@ def theta(S, K, r, T, sigma, option_type="call"):
             theta = -((S * norm.pdf(d1, 0, 1) * sigma) / (2 * np.sqrt(T))) - r * K * np.exp(-r * T) * norm.cdf(d2, 0, 1)
         elif option_type == "put":
             theta = -((S * norm.pdf(d1, 0, 1) * sigma) / (2 * np.sqrt(T))) + r * K * np.exp(-r * T) * norm.cdf(-d2, 0, 1)
-        return theta / 365  # Convert to per-day theta
+        return theta # Convert to per-day theta
     except:
         return None
 
@@ -241,13 +241,13 @@ def index():
                     <label for="S">Stock Price (S):</label>
                     <input type="number" step="0.01" id="S" name="S" value="{{S}}" required>
 
-                    <label for="K">Strike Price (K):</label>
+                    <label for="K">Exercise Price (K):</label>
                     <input type="number" step="0.01" id="K" name="K" value="{{K}}" required>
 
                     <label for="r">Interest Rate (r):</label>
                     <input type="number" step="0.001" id="r" name="r" value="{{r}}" required>
 
-                    <label for="T">Time to Expiry Date (in days):</label>
+                    <label for="T">Time to Maturity (in days):</label>
                     <input type="number" step="1" id="T" name="T" value="{{T_days}}" required>
 
                     <label for="sigma">Volatility (σ):</label>
