@@ -6,7 +6,7 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 import io
 import base64
-import seaborn as sns 
+import matplotlib.colors as mcolors
 
 app = Flask(__name__)
 
@@ -66,15 +66,17 @@ def rho(S, K, r, T, sigma, option_type="call"):
 
 # Function to generate plot image and return it as a base64 string
 def generate_plot(spot_prices, values, ylabel):
-    plt.figure(figsize=(5, 3))  # Adjusted graph size
-    sns.set_style("darkgrid")
-    plt.plot(spot_prices, values, color='#1f77b4', linestyle='--', marker='o', markersize=4)
+    plt.figure(figsize=(5, 3))
+    # Create a color gradient
+    colors = list(mcolors.TABLEAU_COLORS.values())
+    plt.plot(spot_prices, values, color=colors[0], linewidth=2)
+    plt.fill_between(spot_prices, values, color=colors[0], alpha=0.3)
     plt.xlabel('Underlying Asset Price')
     plt.ylabel(ylabel)
     plt.title(f'{ylabel} vs Underlying Asset Price')
-    plt.grid(True, linestyle=':', linewidth=0.5)
+    plt.grid(True, linestyle='--', linewidth=0.5)
     plt.tight_layout()
-
+    plt.style.use('classic')
 
     # Save it to a bytes buffer
     buf = io.BytesIO()
@@ -147,10 +149,12 @@ def index():
                 if (currentTheme === "dark") {
                     document.body.classList.add("dark-mode");
                     document.querySelectorAll("button, input, select, h1, h3, label").forEach(el => el.classList.add("dark-mode"));
+                    document.getElementById("theme-toggle-icon").classList.add("dark-mode");
                 }
                 document.getElementById("theme-toggle").addEventListener("click", function() {
                     document.body.classList.toggle("dark-mode");
                     document.querySelectorAll("button, input, select, h1, h3, label").forEach(el => el.classList.toggle("dark-mode"));
+                    document.getElementById("theme-toggle-icon").classList.toggle("dark-mode");
                     if (document.body.classList.contains("dark-mode")) {
                         localStorage.setItem("theme", "dark");
                     } else {
@@ -163,7 +167,9 @@ def index():
     <body>
         <div class="container">
             <div class="main-content">
-                <button id="theme-toggle">Toggle Dark/Light Mode</button>
+                <button id="theme-toggle">
+                    <span id="theme-toggle-icon">🌙</span>
+                </button>
                 <h1>Black-Scholes Option Price and Greeks Calculator</h1>
                 
                 <!-- Display the calculated option price and Greeks -->
