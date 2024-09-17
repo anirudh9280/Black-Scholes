@@ -9,59 +9,73 @@ import base64
 
 app = Flask(__name__)
 
-# Function to calculate d1 and d2
-def getd1d2(S, K, r, T, sigma):
-    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-    return d1, d2
-
 # Black-Scholes formula
 def blackScholes(S, K, r, T, sigma, option_type="call"):
-    d1, d2 = getd1d2(S, K, r, T, sigma)
-    if option_type == "call":
-        price = S * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
-    elif option_type == "put":
-        price = K * np.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1)
-    return price
+    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    try:
+        if option_type == "call":
+            price = S * norm.cdf(d1, 0, 1) - K * np.exp(-r * T) * norm.cdf(d2, 0, 1)
+        elif option_type == "put":
+            price = K * np.exp(-r * T) * norm.cdf(-d2, 0, 1) - S * norm.cdf(-d1, 0, 1)
+        return price
+    except:
+        return None
 
 # Delta
 def delta(S, K, r, T, sigma, option_type="call"):
-    d1, _ = getd1d2(S, K, r, T, sigma)
-    if option_type == "call":
-        return norm.cdf(d1)
-    else:
-        return norm.cdf(d1) - 1
+    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    try:
+        if option_type == "call":
+            delta = norm.cdf(d1, 0, 1)
+        elif option_type == "put":
+            delta = -norm.cdf(-d1, 0, 1)
+        return delta
+    except:
+        return None
 
 # Gamma
 def gamma(S, K, r, T, sigma):
-    d1, _ = getd1d2(S, K, r, T, sigma)
-    return norm.pdf(d1) / (S * sigma * np.sqrt(T))
+    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    try:
+        gamma = norm.pdf(d1, 0, 1) / (S * sigma * np.sqrt(T))
+        return gamma
+    except:
+        return None
 
 # Theta
 def theta(S, K, r, T, sigma, option_type="call"):
-    d1, d2 = getd1d2(S, K, r, T, sigma)
-    term1 = -(S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
-    if option_type == "call":
-        term2 = r * K * np.exp(-r * T) * norm.cdf(d2)
-        theta = term1 - term2
-    else:
-        term2 = r * K * np.exp(-r * T) * norm.cdf(-d2)
-        theta = term1 + term2
-    return theta / 365  # Convert to per-day theta
+    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    try:
+        if option_type == "call":
+            theta = -((S * norm.pdf(d1, 0, 1) * sigma) / (2 * np.sqrt(T))) - r * K * np.exp(-r * T) * norm.cdf(d2, 0, 1)
+        elif option_type == "put":
+            theta = -((S * norm.pdf(d1, 0, 1) * sigma) / (2 * np.sqrt(T))) + r * K * np.exp(-r * T) * norm.cdf(-d2, 0, 1)
+        return theta / 365  # Convert to per-day theta
+    except:
+        return None
 
 # Vega
 def vega(S, K, r, T, sigma):
-    d1, _ = getd1d2(S, K, r, T, sigma)
-    return S * np.sqrt(T) * norm.pdf(d1) * 0.01  # Vega per 1% change in volatility
+    d1 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    try:
+        vega = S * np.sqrt(T) * norm.pdf(d1, 0, 1) * 0.01  # Vega per 1% change in volatility
+        return vega
+    except:
+        return None
 
 # Rho
 def rho(S, K, r, T, sigma, option_type="call"):
-    _, d2 = getd1d2(S, K, r, T, sigma)
-    if option_type == "call":
-        rho = K * T * np.exp(-r * T) * norm.cdf(d2) * 0.01
-    else:
-        rho = -K * T * np.exp(-r * T) * norm.cdf(-d2) * 0.01
-    return rho
+    d2 = (np.log(S / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T)) - sigma * np.sqrt(T)
+    try:
+        if option_type == "call":
+            rho = 0.01 * K * T * np.exp(-r * T) * norm.cdf(d2, 0, 1)
+        elif option_type == "put":
+            rho = -0.01 * K * T * np.exp(-r * T) * norm.cdf(-d2, 0, 1)
+        return rho
+    except:
+        return None
 
 # Function to generate plot image and return it as a base64 string
 def generate_plot(spot_prices, values, ylabel, theme):
@@ -81,9 +95,9 @@ def generate_plot(spot_prices, values, ylabel, theme):
     plt.figure(figsize=(5, 3), facecolor=bg_color)
     plt.plot(spot_prices, values, color=line_color, linewidth=2)
     plt.fill_between(spot_prices, values, color=line_color, alpha=0.3)
-    plt.xlabel('Underlying Asset Price', color=text_color)
+    plt.xlabel('Stock Price', color=text_color)
     plt.ylabel(ylabel, color=text_color)
-    plt.title(f'{ylabel} vs Underlying Asset Price', color=text_color)
+    plt.title(f'{ylabel} vs Stock Price', color=text_color)
     plt.grid(True, linestyle='--', linewidth=0.5, color=grid_color)
     plt.tight_layout()
     plt.style.use('classic')
@@ -101,11 +115,11 @@ def generate_plot(spot_prices, values, ylabel, theme):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Updated default values
-    S = 120.00
-    K = 100.00
-    r = 0.02
-    T = 1.0  # Time in years
-    sigma = 0.20
+    S = 30.00
+    K = 50.00
+    r = 0.03
+    T_days = 250  # Time in days
+    sigma = 0.30
     option_type = 'call'  # Default is Call
 
     theme = request.cookies.get('theme', 'dark')  # Default theme is now dark
@@ -115,9 +129,11 @@ def index():
         S = float(request.form.get('S', S))
         K = float(request.form.get('K', K))
         r = float(request.form.get('r', r))
-        T = float(request.form.get('T', T))
+        T_days = float(request.form.get('T', T_days))
         sigma = float(request.form.get('sigma', sigma))
         option_type = request.form.get('type', option_type)
+
+    T = T_days / 365  # Convert days to years
 
     # Calculate the Greeks and Option Price
     option_price = round(blackScholes(S, K, r, T, sigma, option_type), 4)
@@ -128,23 +144,23 @@ def index():
     rho_value = round(rho(S, K, r, T, sigma, option_type), 4)
 
     # Generate values for spot prices
-    spot_prices = np.linspace(10, 200, 100)
+    spot_prices = np.linspace(0.01, S + 50, 100)
 
     # Calculate Greeks and Option Price for plotting
+    prices = [blackScholes(SP, K, r, T, sigma, option_type) for SP in spot_prices]
     deltas = [delta(SP, K, r, T, sigma, option_type) for SP in spot_prices]
     gammas = [gamma(SP, K, r, T, sigma) for SP in spot_prices]
     thetas = [theta(SP, K, r, T, sigma, option_type) for SP in spot_prices]
     vegas = [vega(SP, K, r, T, sigma) for SP in spot_prices]
     rhos = [rho(SP, K, r, T, sigma, option_type) for SP in spot_prices]
-    prices = [blackScholes(SP, K, r, T, sigma, option_type) for SP in spot_prices]
 
     # Generate plots for each Greek and the option price
+    price_plot = generate_plot(spot_prices, prices, 'Option Price', theme)
     delta_plot = generate_plot(spot_prices, deltas, 'Delta', theme)
     gamma_plot = generate_plot(spot_prices, gammas, 'Gamma', theme)
     theta_plot = generate_plot(spot_prices, thetas, 'Theta', theme)
     vega_plot = generate_plot(spot_prices, vegas, 'Vega', theme)
     rho_plot = generate_plot(spot_prices, rhos, 'Rho', theme)
-    price_plot = generate_plot(spot_prices, prices, 'Option Price', theme)
 
     # Render the template with the form, results, and graphs
     response = make_response(render_template_string('''
@@ -184,7 +200,7 @@ def index():
                 <div class="center">
                     <h1>Black-Scholes Option Price and Greeks Calculator</h1>
                     <!-- Display the calculated option price and Greeks -->
-                    <h3>{{ "Call Price" if option_type == "call" else "Put Price" }}: {{ option_price }}</h3>
+                    <h3>{{ option_type.capitalize() }} Price: {{ option_price }}</h3>
                     <h3>Delta: {{ delta_value }}</h3>
                     <h3>Gamma: {{ gamma_value }}</h3>
                     <h3>Theta: {{ theta_value }}</h3>
@@ -222,17 +238,17 @@ def index():
             <div class="sidebar">
                 <form method="POST">
                     <h3>Input Parameters:</h3>
-                    <label for="S">Underlying Asset Price (S):</label>
+                    <label for="S">Stock Price (S):</label>
                     <input type="number" step="0.01" id="S" name="S" value="{{S}}" required>
 
                     <label for="K">Strike Price (K):</label>
                     <input type="number" step="0.01" id="K" name="K" value="{{K}}" required>
 
-                    <label for="r">Risk-Free Rate (r):</label>
+                    <label for="r">Interest Rate (r):</label>
                     <input type="number" step="0.001" id="r" name="r" value="{{r}}" required>
 
-                    <label for="T">Time to Expiry (T in years):</label>
-                    <input type="number" step="any" id="T" name="T" value="{{T}}" required>
+                    <label for="T">Time to Expiry Date (in days):</label>
+                    <input type="number" step="1" id="T" name="T" value="{{T_days}}" required>
 
                     <label for="sigma">Volatility (σ):</label>
                     <input type="number" step="0.01" id="sigma" name="sigma" value="{{sigma}}" required>
@@ -249,7 +265,7 @@ def index():
         </div>
     </body>
 </html>
-''', S=S, K=K, r=r, T=T, sigma=sigma, option_type=option_type,
+''', S=S, K=K, r=r, T_days=T_days, sigma=sigma, option_type=option_type,
      option_price=option_price, delta_value=delta_value, gamma_value=gamma_value,
      theta_value=theta_value, vega_value=vega_value, rho_value=rho_value,
      delta_plot=delta_plot, gamma_plot=gamma_plot, theta_plot=theta_plot,
