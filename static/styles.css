@@ -1,27 +1,36 @@
 /* Light Mode (Default) */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #fdfdfd;
     color: #333;
     transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
+    min-height: 100vh;
+    /* Ensure the container takes at least the full viewport height */
 }
 
 .main-content {
     flex: 2;
-    padding-right: 20px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .sidebar {
     flex: 1.3;
     padding: 20px;
     background-color: #fafafa;
-    border: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    /* Make the sidebar sticky */
+    align-self: flex-start;
+    /* Align the sidebar to the start of the container */
 }
 
 .graph-grid {
@@ -39,15 +48,17 @@ body {
 }
 
 h1 {
-    color: #3c3c3c;
+    background: linear-gradient(45deg, #e64a19, #ffccbc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 h3 {
-    color: #555555;
+    color: #d84315;
 }
 
 h4 {
-    color: #666666;
+    color: #bf360c;
 }
 
 input,
@@ -64,6 +75,7 @@ button {
 label {
     font-weight: bold;
     margin-top: 10px;
+    color: #333333;
 }
 
 button {
@@ -89,6 +101,14 @@ button:hover {
     font-size: 24px;
 }
 
+.center {
+    text-align: center;
+}
+
+.dark-mode .center {
+    color: #e0e0e0;
+}
+
 /* Dark Mode */
 body.dark-mode {
     background-color: #2e2e2e;
@@ -96,31 +116,34 @@ body.dark-mode {
 }
 
 h1.dark-mode {
-    color: #f0f0f0;
+    background: linear-gradient(45deg, #ff7043, #ffccbc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 h3.dark-mode {
-    color: #cccccc;
+    color: #ff8a65;
 }
 
 h4.dark-mode {
-    color: #bbbbbb;
+    color: #ffab91;
 }
 
 label.dark-mode {
-    color: #e0e0e0;
+    color: #050505;
 }
 
 .sidebar.dark-mode {
-    background-color: #3c3c3c;
-    border-color: #555555;
+    background-color: #1e1e1e;
+    /* Darker background for sidebar in dark mode */
+    border-left: 1px solid #444444;
 }
 
 input.dark-mode,
 select.dark-mode {
-    background-color: #4a4a4a;
-    color: #e0e0e0;
-    border-color: #666666;
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    border-color: #555555;
 }
 
 button.dark-mode {
@@ -142,10 +165,6 @@ input.dark-mode::placeholder {
 
 .graph-grid.dark-mode div {
     background-color: #3c3c3c;
-}
-
-.graph-grid.dark-mode h4 {
-    color: #d0d0d0;
 }
 
 @media (min-width: 768px) {

@@ -1,12 +1,11 @@
 import matplotlib
 matplotlib.use('Agg')  # Use 'Agg' backend for non-GUI environments
-from flask import Flask, request, render_template_string, url_for
+from flask import Flask, request, render_template_string, url_for, make_response
 import numpy as np
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import io
 import base64
-import matplotlib.colors as mcolors
 
 app = Flask(__name__)
 
@@ -65,49 +64,60 @@ def rho(S, K, r, T, sigma, option_type="call"):
     return rho
 
 # Function to generate plot image and return it as a base64 string
-def generate_plot(spot_prices, values, ylabel):
-    plt.figure(figsize=(5, 3))
-    # Create a color gradient
-    colors = list(mcolors.TABLEAU_COLORS.values())
-    plt.plot(spot_prices, values, color=colors[0], linewidth=2)
-    plt.fill_between(spot_prices, values, color=colors[0], alpha=0.3)
-    plt.xlabel('Underlying Asset Price')
-    plt.ylabel(ylabel)
-    plt.title(f'{ylabel} vs Underlying Asset Price')
-    plt.grid(True, linestyle='--', linewidth=0.5)
+def generate_plot(spot_prices, values, ylabel, theme):
+    buf = io.BytesIO()
+    # Choose colors based on theme
+    if theme == 'dark':
+        line_color = '#ff9f80'  # Light coral for dark background
+        bg_color = '#2e2e2e'    # Dark background
+        grid_color = '#555555'
+        text_color = '#f0f0f0'
+    else:
+        line_color = '#ff6f61'  # Coral for light background
+        bg_color = '#ffffff'    # Light background
+        grid_color = '#cccccc'
+        text_color = '#333333'
+
+    plt.figure(figsize=(5, 3), facecolor=bg_color)
+    plt.plot(spot_prices, values, color=line_color, linewidth=2)
+    plt.fill_between(spot_prices, values, color=line_color, alpha=0.3)
+    plt.xlabel('Underlying Asset Price', color=text_color)
+    plt.ylabel(ylabel, color=text_color)
+    plt.title(f'{ylabel} vs Underlying Asset Price', color=text_color)
+    plt.grid(True, linestyle='--', linewidth=0.5, color=grid_color)
     plt.tight_layout()
     plt.style.use('classic')
-
-    # Save it to a bytes buffer
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=100)
+    ax = plt.gca()
+    ax.set_facecolor(bg_color)
+    ax.tick_params(axis='x', colors=text_color)
+    ax.tick_params(axis='y', colors=text_color)
+    plt.savefig(buf, format='png', dpi=100, facecolor=bg_color)
     buf.seek(0)
-
-    # Convert the image to a base64 string
     image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
     buf.close()
     plt.close()
-
     return image_base64
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Default values
-    S = 30.00
-    K = 50.00
-    r = 0.03
+    # Updated default values
+    S = 120.00
+    K = 100.00
+    r = 0.02
     T = 1.0  # Time in years
-    sigma = 0.30
+    sigma = 0.20
     option_type = 'call'  # Default is Call
+
+    theme = request.cookies.get('theme', 'dark')  # Default theme is now dark
 
     if request.method == 'POST':
         # Get data from form inputs
-        S = float(request.form.get('S', 30.00))
-        K = float(request.form.get('K', 50.00))
-        r = float(request.form.get('r', 0.03))
-        T = float(request.form.get('T', 1.0))
-        sigma = float(request.form.get('sigma', 0.30))
-        option_type = request.form.get('type', 'call')
+        S = float(request.form.get('S', S))
+        K = float(request.form.get('K', K))
+        r = float(request.form.get('r', r))
+        T = float(request.form.get('T', T))
+        sigma = float(request.form.get('sigma', sigma))
+        option_type = request.form.get('type', option_type)
 
     # Calculate the Greeks and Option Price
     option_price = round(blackScholes(S, K, r, T, sigma, option_type), 4)
@@ -118,7 +128,7 @@ def index():
     rho_value = round(rho(S, K, r, T, sigma, option_type), 4)
 
     # Generate values for spot prices
-    spot_prices = np.linspace(10, 100, 100)
+    spot_prices = np.linspace(10, 200, 100)
 
     # Calculate Greeks and Option Price for plotting
     deltas = [delta(SP, K, r, T, sigma, option_type) for SP in spot_prices]
@@ -129,37 +139,38 @@ def index():
     prices = [blackScholes(SP, K, r, T, sigma, option_type) for SP in spot_prices]
 
     # Generate plots for each Greek and the option price
-    delta_plot = generate_plot(spot_prices, deltas, 'Delta')
-    gamma_plot = generate_plot(spot_prices, gammas, 'Gamma')
-    theta_plot = generate_plot(spot_prices, thetas, 'Theta')
-    vega_plot = generate_plot(spot_prices, vegas, 'Vega')
-    rho_plot = generate_plot(spot_prices, rhos, 'Rho')
-    price_plot = generate_plot(spot_prices, prices, 'Option Price')
+    delta_plot = generate_plot(spot_prices, deltas, 'Delta', theme)
+    gamma_plot = generate_plot(spot_prices, gammas, 'Gamma', theme)
+    theta_plot = generate_plot(spot_prices, thetas, 'Theta', theme)
+    vega_plot = generate_plot(spot_prices, vegas, 'Vega', theme)
+    rho_plot = generate_plot(spot_prices, rhos, 'Rho', theme)
+    price_plot = generate_plot(spot_prices, prices, 'Option Price', theme)
 
     # Render the template with the form, results, and graphs
-    return render_template_string('''
+    response = make_response(render_template_string('''
 <!DOCTYPE html>
 <html>
     <head>
         <title>Black-Scholes Option Price Calculator</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
         <script>
+            function setTheme(theme) {
+                document.body.classList.toggle("dark-mode", theme === "dark");
+                document.querySelectorAll("button, input, select, h1, h3, label").forEach(el => el.classList.toggle("dark-mode", theme === "dark"));
+                document.getElementById("theme-toggle-icon").textContent = theme === "dark" ? "☀️" : "🌙";
+                localStorage.setItem("theme", theme);
+                document.cookie = "theme=" + theme + "; path=/";
+            }
+
             document.addEventListener("DOMContentLoaded", function() {
-                const currentTheme = localStorage.getItem("theme");
-                if (currentTheme === "dark") {
-                    document.body.classList.add("dark-mode");
-                    document.querySelectorAll("button, input, select, h1, h3, label").forEach(el => el.classList.add("dark-mode"));
-                    document.getElementById("theme-toggle-icon").classList.add("dark-mode");
-                }
+                const currentTheme = localStorage.getItem("theme") || "dark";  // Default theme is now dark
+                setTheme(currentTheme);
+
                 document.getElementById("theme-toggle").addEventListener("click", function() {
-                    document.body.classList.toggle("dark-mode");
-                    document.querySelectorAll("button, input, select, h1, h3, label").forEach(el => el.classList.toggle("dark-mode"));
-                    document.getElementById("theme-toggle-icon").classList.toggle("dark-mode");
-                    if (document.body.classList.contains("dark-mode")) {
-                        localStorage.setItem("theme", "dark");
-                    } else {
-                        localStorage.setItem("theme", "light");
-                    }
+                    const newTheme = document.body.classList.contains("dark-mode") ? "light" : "dark";
+                    setTheme(newTheme);
+                    // Reload the page to update images
+                    location.reload();
                 });
             });
         </script>
@@ -170,17 +181,17 @@ def index():
                 <button id="theme-toggle">
                     <span id="theme-toggle-icon">🌙</span>
                 </button>
-                <h1>Black-Scholes Option Price and Greeks Calculator</h1>
-                
-                <!-- Display the calculated option price and Greeks -->
-                <h3>{{ "Call Price" if option_type == "call" else "Put Price" }}: {{ option_price }}</h3>
-                <h3>Delta: {{ delta_value }}</h3>
-                <h3>Gamma: {{ gamma_value }}</h3>
-                <h3>Theta: {{ theta_value }}</h3>
-                <h3>Vega: {{ vega_value }}</h3>
-                <h3>Rho: {{ rho_value }}</h3>
-                
-                <h3>Greeks and Option Price vs Stock Price:</h3>
+                <div class="center">
+                    <h1>Black-Scholes Option Price and Greeks Calculator</h1>
+                    <!-- Display the calculated option price and Greeks -->
+                    <h3>{{ "Call Price" if option_type == "call" else "Put Price" }}: {{ option_price }}</h3>
+                    <h3>Delta: {{ delta_value }}</h3>
+                    <h3>Gamma: {{ gamma_value }}</h3>
+                    <h3>Theta: {{ theta_value }}</h3>
+                    <h3>Vega: {{ vega_value }}</h3>
+                    <h3>Rho: {{ rho_value }}</h3>
+                </div>
+                <h3 class="center">Greeks and Option Price vs Stock Price:</h3>
                 <div class="graph-grid">
                     <div>
                         <h4>Option Price</h4>
@@ -242,7 +253,9 @@ def index():
      option_price=option_price, delta_value=delta_value, gamma_value=gamma_value,
      theta_value=theta_value, vega_value=vega_value, rho_value=rho_value,
      delta_plot=delta_plot, gamma_plot=gamma_plot, theta_plot=theta_plot,
-     vega_plot=vega_plot, rho_plot=rho_plot, price_plot=price_plot)
+     vega_plot=vega_plot, rho_plot=rho_plot, price_plot=price_plot))
+
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True)
