@@ -156,15 +156,21 @@ To run this project on your local machine, follow these steps:
 
    Open your terminal and run:
 
+```bash
 git clone https://github.com/your-username/black-scholes-calculator.git
 cd black-scholes-calculator
+```
 
 2. **Install Dependencies**
 Install the required Python packages using pip:
+```bash
 pip install -r requirements.txt
+```
 
 3. **Run the App**
+```bash
 python main.py
+```
 
 
 ## Disclaimer
