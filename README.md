@@ -90,9 +90,9 @@ $$
 \Gamma = \frac{N'(d_1)}{S \sigma \sqrt{T - t}}
 $$
 
-Where \( N'(d_1) \) is the probability density function of the standard normal distribution.
+Where $( N'(d_1))$ is the probability density function of the standard normal distribution.
 
-**Theta (\( \Theta \))**
+**Theta ($\Theta$)**
 
 Measures the sensitivity of the option price to the passage of time (time decay).
 
@@ -108,7 +108,7 @@ $$
 \Theta_{\text{put}} = -\frac{S N'(d_1) \sigma}{2 \sqrt{T - t}} + r K e^{-r(T - t)} N(-d_2)
 $$
 
-**Vega (\( \nu \))**
+**Vega ($\nu$)**
 
 Measures the sensitivity of the option price to changes in the volatility of the underlying asset.
 
