@@ -115,11 +115,11 @@ def generate_plot(spot_prices, values, ylabel, theme):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Updated default values
-    S = 30.00
-    K = 50.00
-    r = 0.03
-    T_days = 250  # Time in days
-    sigma = 0.30
+    S = 50.00
+    K = 65.00
+    r = 0.05
+    T_days = 365  # Time in days
+    sigma = 0.25
     option_type = 'call'  # Default is Call
 
     theme = request.cookies.get('theme', 'dark')  # Default theme is now dark
