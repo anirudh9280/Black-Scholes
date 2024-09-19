@@ -35,15 +35,15 @@ The Black-Scholes model is a mathematical model for pricing an options contract 
 
 For a European call option:
 
-\[
+$$
 C(S, t) = S N(d_1) - K e^{-r(T - t)} N(d_2)
-\]
+$$
 
 For a European put option:
 
-\[
+$$
 P(S, t) = K e^{-r(T - t)} N(-d_2) - S N(-d_1)
-\]
+$$
 
 Where:
 
@@ -56,13 +56,13 @@ Where:
 
 The variables \( d_1 \) and \( d_2 \) are calculated as:
 
-\[
+$$
 d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{\sigma^2}{2} \right)(T - t)}{\sigma \sqrt{T - t}}
-\]
+$$
 
-\[
+$$
 d_2 = d_1 - \sigma \sqrt{T - t}
-\]
+$$
 
 ### Option Greeks
 
@@ -72,23 +72,23 @@ Measures the sensitivity of the option price to a $1 change in the price of the 
 
 - **Call Option:**
 
-\[
+$$
 \Delta_{\text{call}} = N(d_1)
-\]
+$$
 
 - **Put Option:**
 
-\[
+$$
 \Delta_{\text{put}} = N(d_1) - 1
-\]
+$$
 
 **Gamma (\( \Gamma \))**
 
 Measures the rate of change in Delta with respect to changes in the underlying asset price.
 
-\[
+$$
 \Gamma = \frac{N'(d_1)}{S \sigma \sqrt{T - t}}
-\]
+$$
 
 Where \( N'(d_1) \) is the probability density function of the standard normal distribution.
 
@@ -98,23 +98,23 @@ Measures the sensitivity of the option price to the passage of time (time decay)
 
 - **Call Option:**
 
-\[
+$$
 \Theta_{\text{call}} = -\frac{S N'(d_1) \sigma}{2 \sqrt{T - t}} - r K e^{-r(T - t)} N(d_2)
-\]
+$$
 
 - **Put Option:**
 
-\[
+$$
 \Theta_{\text{put}} = -\frac{S N'(d_1) \sigma}{2 \sqrt{T - t}} + r K e^{-r(T - t)} N(-d_2)
-\]
+$$
 
 **Vega (\( \nu \))**
 
 Measures the sensitivity of the option price to changes in the volatility of the underlying asset.
 
-\[
+$$
 \nu = S \sqrt{T - t} N'(d_1)
-\]
+$$
 
 **Rho (\( \rho \))**
 
@@ -122,15 +122,15 @@ Measures the sensitivity of the option price to changes in the risk-free interes
 
 - **Call Option:**
 
-\[
+$$
 \rho_{\text{call}} = K (T - t) e^{-r(T - t)} N(d_2)
-\]
+$$
 
 - **Put Option:**
 
-\[
+$$
 \rho_{\text{put}} = -K (T - t) e^{-r(T - t)} N(-d_2)
-\]
+$$
 
 ## Accessing the Application
 
@@ -154,16 +154,14 @@ To run this project on your local machine, follow these steps:
 
    Open your terminal and run:
 
-
-Open your terminal and run:
 git clone https://github.com/your-username/black-scholes-calculator.git
 cd black-scholes-calculator
 
-	3.  Install Dependencies
+2. **Install Dependencies**
 Install the required Python packages using pip:
 pip install -r requirements.txt
 
-	4.  Run the app 
+3. **Run the App**
 python main.py
 
 
