@@ -1,12 +1,12 @@
-Black-Scholes Option Pricing Calculator
+# Black-Scholes Option Pricing Calculator
 
-Access the live application here
+## Access the live application here
 
-Overview
+## Overview
 
 This is a web application that calculates the Black-Scholes option price and the Greeks (Delta, Gamma, Theta, Vega, Rho) for European call and put options. The calculator allows users to input parameters such as stock price, exercise price, interest rate, time to maturity, volatility, and option type. It provides both numerical results and graphical representations of the option price and Greeks with respect to the underlying stock price.
 
-Features
+### Features
 
 	•	Option Pricing: Calculate the Black-Scholes price for European call and put options.
 	•	Greeks Calculation: Compute the option Greeks—Delta, Gamma, Theta, Vega, and Rho.
@@ -14,38 +14,34 @@ Features
 	•	User-Friendly Interface: Input parameters are conveniently placed on the sidebar.
 	•	Dark Mode Support: Toggle between light and dark themes for comfortable viewing.
 
-
-About the Black-Scholes Model
+### About the Black-Scholes Model
 
 The Black-Scholes model provides a mathematical framework for evaluating the price of European options. It’s based on the assumption that the price of the underlying asset follows a geometric Brownian motion with constant drift and volatility.
 
-Key Assumptions:
+### Key Assumptions:
 
 	•	The option is European and can only be exercised at expiration.
 	•	Markets are efficient, and there are no transaction costs.
 	•	The risk-free interest rate and volatility of the underlying asset are known and constant.
 	•	The returns on the underlying asset are normally distributed.
 
-
-
-
-Mathematical Formulas
+### Mathematical Formulas
 
 The Black-Scholes model is a mathematical model for pricing an options contract by determining the theoretical value for European-style options. The model incorporates the key factors that influence an option’s price.
 
-Black-Scholes Option Pricing Formula
+### Black-Scholes Option Pricing Formula
 
 For a European call option:
 
-
+$$
 C(S, t) = S N(d_1) - K e^{-r(T - t)} N(d_2)
-
+$$
 
 For a European put option:
 
-
+$$
 P(S, t) = K e^{-r(T - t)} N(-d_2) - S N(-d_1)
-
+$$
 
 Where:
 
@@ -58,72 +54,72 @@ Where:
 
 The variables  d_1  and  d_2  are calculated as:
 
+$$
+d_1 = \frac{\ln\left(\dfrac{S}{K}\right) + \left( r + \dfrac{\sigma^2}{2} \right)(T - t)}{\sigma \sqrt{T - t}}
+$$
 
-d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left(r + \frac{\sigma^2}{2}\right)(T - t)}{\sigma \sqrt{T - t}}
-
-
-
+$$
 d_2 = d_1 - \sigma \sqrt{T - t}
+$$
 
+### Option Greeks
 
-Option Greeks
-
-Delta ( \Delta )
+Delta (  \Delta  )
 
 Measures the sensitivity of the option price to a $1 change in the price of the underlying asset.
 
 	•	Call Option:
-
+$$
 \Delta_{\text{call}} = N(d_1)
-
+$$
 	•	Put Option:
-
+$$
 \Delta_{\text{put}} = N(d_1) - 1
+$$
 
-
-Gamma ( \Gamma )
+Gamma (  \Gamma  )
 
 Measures the rate of change in Delta with respect to changes in the underlying asset price.
 
-
-\Gamma = \frac{N{\prime}(d_1)}{S \sigma \sqrt{T - t}}
-
+$$
+\Gamma = \frac{N’(d_1)}{S \sigma \sqrt{T - t}}
+$$
 
 Where  N{\prime}(d_1)  is the probability density function of the standard normal distribution.
 
-Theta ( \Theta )
+Theta (  \Theta  )
 
 Measures the sensitivity of the option price to the passage of time (time decay).
 
 	•	Call Option:
-
-\Theta_{\text{call}} = -\frac{S N{\prime}(d_1) \sigma}{2 \sqrt{T - t}} - r K e^{-r(T - t)} N(d_2)
-
+$$
+\Theta_{\text{call}} = -\frac{S N’(d_1) \sigma}{2 \sqrt{T - t}} - r K e^{-r(T - t)} N(d_2)
+$$
 	•	Put Option:
+$$
+\Theta_{\text{put}} = -\frac{S N’(d_1) \sigma}{2 \sqrt{T - t}} + r K e^{-r(T - t)} N(-d_2)
+$$
 
-\Theta_{\text{put}} = -\frac{S N{\prime}(d_1) \sigma}{2 \sqrt{T - t}} + r K e^{-r(T - t)} N(-d_2)
-
-
-Vega ( \nu )
+Vega (  \nu  )
 
 Measures the sensitivity of the option price to changes in the volatility of the underlying asset.
 
+$$
+\nu = S \sqrt{T - t} N’(d_1)
+$$
 
-\nu = S \sqrt{T - t} N{\prime}(d_1)
-
-
-Rho ( \rho )
+Rho (  \rho  )
 
 Measures the sensitivity of the option price to changes in the risk-free interest rate.
 
 	•	Call Option:
-
+$$
 \rho_{\text{call}} = K (T - t) e^{-r(T - t)} N(d_2)
-
+$$
 	•	Put Option:
-
+$$
 \rho_{\text{put}} = -K (T - t) e^{-r(T - t)} N(-d_2)
-
+$$
 
 Accessing the Application
 
