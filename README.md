@@ -46,7 +46,7 @@ P(S, t) = K e^{-r(T)} N(-d_2) - S N(-d_1)
 $$
 
 Where:
-$$
+
 - S = Current stock price
 - K = Exercise price (strike price)
 - r = Risk-free interest rate
@@ -54,10 +54,12 @@ $$
 - σ = Volatility of the underlying asset
 - N(x) = Cumulative distribution function of the standard normal distribution
 
+$$
 The variables d_1 and d_2 are calculated as:
+$$
 
+$$
 d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{σ^2}{2} \right)(T)}{σ \sqrt{T}}
-
 $$
 
 $$
