@@ -82,7 +82,7 @@ $$
 \Delta_{\text{put}} = N(d_1) - 1
 $$
 
-**Gamma (\( \Gamma \))**
+**Gamma ( Γ )**
 
 Measures the rate of change in Delta with respect to changes in the underlying asset price.
 
