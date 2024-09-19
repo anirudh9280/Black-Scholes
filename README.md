@@ -55,9 +55,9 @@ $$
 - \( N(\cdot) \) = Cumulative distribution function of the standard normal distribution
 
 The variables \( d_1 \) and \( d_2 \) are calculated as:
-$$
-$$
+
 d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{\sigma^2}{2} \right)(T - t)}{\sigma \sqrt{T - t}}
+
 $$
 
 $$
