@@ -47,21 +47,21 @@ $$
 
 Where:
 $$
-- \( S \) = Current stock price
-- \( K \) = Exercise price (strike price)
-- \( r \) = Risk-free interest rate
-- \( T \) = Time to maturity (in years)
-- \( \sigma \) = Volatility of the underlying asset
+- S = Current stock price
+- K = Exercise price (strike price)
+- r = Risk-free interest rate
+- T = Time to maturity (in years)
+- σ = Volatility of the underlying asset
 - \( N(\cdot) \) = Cumulative distribution function of the standard normal distribution
 
 The variables \( d_1 \) and \( d_2 \) are calculated as:
 
-d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{\sigma^2}{2} \right)(T)}{\sigma \sqrt{T}}
+d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{σ^2}{2} \right)(T)}{σ \sqrt{T}}
 
 $$
 
 $$
-d_2 = d_1 - \sigma \sqrt{T}
+d_2 = d_1 - σ \sqrt{T}
 $$
 
 ### Option Greeks
@@ -87,7 +87,7 @@ $$
 Measures the rate of change in Delta with respect to changes in the underlying asset price.
 
 $$
-\Gamma = \frac{N'(d_1)}{S \sigma \sqrt{T}}
+\Gamma = \frac{N'(d_1)}{S σ \sqrt{T}}
 $$
 
 Where $( N'(d_1))$ is the probability density function of the standard normal distribution.
@@ -99,13 +99,13 @@ Measures the sensitivity of the option price to the passage of time (time decay)
 - **Call Option:**
 
 $$
-\Theta_{\text{call}} = -\frac{S N'(d_1) \sigma}{2 \sqrt{T}} - r K e^{-r(T)} N(d_2)
+\Theta_{\text{call}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} - r K e^{-r(T)} N(d_2)
 $$
 
 - **Put Option:**
 
 $$
-\Theta_{\text{put}} = -\frac{S N'(d_1) \sigma}{2 \sqrt{T}} + r K e^{-r(T)} N(-d_2)
+\Theta_{\text{put}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} + r K e^{-r(T)} N(-d_2)
 $$
 
 **Vega ($\nu$)**
