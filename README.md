@@ -66,20 +66,20 @@ $$
 
 ### Option Greeks
 
-**Delta (\( \Delta \))**
+**Delta ( Δ )**
 
 Measures the sensitivity of the option price to a $1 change in the price of the underlying asset.
 
 - **Call Option:**
 
 $$
-\Delta_{\text{call}} = N(d_1)
+Δ_{\text{call}} = N(d_1)
 $$
 
 - **Put Option:**
 
 $$
-\Delta_{\text{put}} = N(d_1) - 1
+Δ_{\text{put}} = N(d_1) - 1
 $$
 
 **Gamma ( Γ )**
@@ -87,49 +87,49 @@ $$
 Measures the rate of change in Delta with respect to changes in the underlying asset price.
 
 $$
-\Gamma = \frac{N'(d_1)}{S σ \sqrt{T}}
+Γ = \frac{N'(d_1)}{S σ \sqrt{T}}
 $$
 
 Where $( N'(d_1))$ is the probability density function of the standard normal distribution.
 
-**Theta ($\Theta$)**
+**Theta ( Θ )**
 
 Measures the sensitivity of the option price to the passage of time (time decay).
 
 - **Call Option:**
 
 $$
-\Theta_{\text{call}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} - r K e^{-r(T)} N(d_2)
+Θ_{\text{call}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} - r K e^{-r(T)} N(d_2)
 $$
 
 - **Put Option:**
 
 $$
-\Theta_{\text{put}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} + r K e^{-r(T)} N(-d_2)
+Θ_{\text{put}} = -\frac{S N'(d_1) σ}{2 \sqrt{T}} + r K e^{-r(T)} N(-d_2)
 $$
 
-**Vega ($\nu$)**
+**Vega ( ν )**
 
 Measures the sensitivity of the option price to changes in the volatility of the underlying asset.
 
 $$
-\nu = S \sqrt{T} N'(d_1)
+ν = S \sqrt{T} N'(d_1)
 $$
 
-**Rho (\( \rho \))**
+**Rho ( ρ )**
 
 Measures the sensitivity of the option price to changes in the risk-free interest rate.
 
 - **Call Option:**
 
 $$
-\rho_{\text{call}} = K (T) e^{-r(T)} N(d_2)
+ρ_{\text{call}} = K (T) e^{-r(T)} N(d_2)
 $$
 
 - **Put Option:**
 
 $$
-\rho_{\text{put}} = -K (T) e^{-r(T)} N(-d_2)
+ρ_{\text{put}} = -K (T) e^{-r(T)} N(-d_2)
 $$
 
 ## Accessing the Application
