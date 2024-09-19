@@ -36,13 +36,13 @@ The Black-Scholes model is a mathematical model for pricing an options contract 
 For a European call option:
 
 $$
-C(S, t) = S N(d_1) - K e^{-r(T - t)} N(d_2)
+C(S, t) = S N(d_1) - K e^{-r(T)} N(d_2)
 $$
 
 For a European put option:
 
 $$
-P(S, t) = K e^{-r(T - t)} N(-d_2) - S N(-d_1)
+P(S, t) = K e^{-r(T)} N(-d_2) - S N(-d_1)
 $$
 
 Where:
