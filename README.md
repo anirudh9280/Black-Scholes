@@ -52,7 +52,7 @@ $$
 - r = Risk-free interest rate
 - T = Time to maturity (in years)
 - σ = Volatility of the underlying asset
-- \( N(\cdot) \) = Cumulative distribution function of the standard normal distribution
+- N(x) = Cumulative distribution function of the standard normal distribution
 
 The variables \( d_1 \) and \( d_2 \) are calculated as:
 
