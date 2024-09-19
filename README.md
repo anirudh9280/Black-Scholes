@@ -46,7 +46,7 @@ P(S, t) = K e^{-r(T - t)} N(-d_2) - S N(-d_1)
 $$
 
 Where:
-
+$$
 - \( S \) = Current stock price
 - \( K \) = Exercise price (strike price)
 - \( r \) = Risk-free interest rate
@@ -55,7 +55,7 @@ Where:
 - \( N(\cdot) \) = Cumulative distribution function of the standard normal distribution
 
 The variables \( d_1 \) and \( d_2 \) are calculated as:
-
+$$
 $$
 d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{\sigma^2}{2} \right)(T - t)}{\sigma \sqrt{T - t}}
 $$
