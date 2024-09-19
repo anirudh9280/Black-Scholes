@@ -161,8 +161,7 @@ git clone https://github.com/your-username/black-scholes-calculator.git
 cd black-scholes-calculator
 ```
 
-2. **Install Dependencies**
-Install the required Python packages using pip:
+2. **Install Dependencies Using pip**
 ```bash
 pip install -r requirements.txt
 ```
