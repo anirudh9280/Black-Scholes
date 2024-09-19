@@ -54,9 +54,9 @@ Where:
 - σ = Volatility of the underlying asset
 - N(x) = Cumulative distribution function of the standard normal distribution
 
-$$
-The variables d_1 and d_2 are calculated as:
-$$
+
+The variables $d_1$ and $d_2$ are calculated as:
+
 
 $$
 d_1 = \frac{\ln\left(\frac{S}{K}\right) + \left( r + \frac{σ^2}{2} \right)(T)}{σ \sqrt{T}}
